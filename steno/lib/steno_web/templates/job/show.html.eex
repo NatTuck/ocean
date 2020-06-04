@@ -1,0 +1,29 @@
+<h1>Show Job</h1>
+
+<ul>
+
+  <li>
+    <strong>Key:</strong>
+    <%= @job.key %>
+  </li>
+
+  <li>
+    <strong>User:</strong>
+    <%= @job.user %>
+  </li>
+
+  <li>
+    <strong>Desc:</strong>
+    <%= @job.desc %>
+  </li>
+
+  <li>
+    <strong>Output:</strong>
+    <%= @job.output %>
+  </li>
+
+</ul>
+
+<span><%= link("Delete", to: Routes.job_path(@conn, :delete, @job),
+      method: :delete, data: [confirm: "Are you sure?"]) %></span>
+<span><%= link("Back", to: Routes.job_path(@conn, :index)) %></span>

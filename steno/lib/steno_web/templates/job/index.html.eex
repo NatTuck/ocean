@@ -1,0 +1,35 @@
+<h1>Listing Jobs</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Seq</th>
+      <th>Key</th>
+      <th>User</th>
+      <th>Desc</th>
+      <th>Output</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for job <- @jobs do %>
+      <tr>
+        <td><%= job.seq %></td>
+        <td><%= job.key %></td>
+        <td><%= job.user %></td>
+        <td><%= job.desc %></td>
+        <td><%= job.output %></td>
+
+        <td>
+          <span><%= link("Show", to: Routes.job_path(@conn, :show, job)) %></span>
+          <span>
+            <%= link("Delete", to: Routes.job_path(@conn, :delete, job),
+              method: :delete, data: [confirm: "Are you sure?"]) %>
+          </span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
