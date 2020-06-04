@@ -1,6 +1,8 @@
 defmodule Steno.Queue do
   use GenServer
 
+  alias Steno.Job
+
   # There is a single global job queue process.
   #
   # The state has two components:
@@ -33,8 +35,8 @@ defmodule Steno.Queue do
     GenServer.call(@name, {:put, job})
   end
 
-  def pop() do
-    GenServer.call(@name, :pop)
+  def next() do
+    GenServer.call(@name, :next)
   end
 
   def get(job_id) do
@@ -56,16 +58,26 @@ defmodule Steno.Queue do
     {:reply, state.jobs, state}
   end
 
-  def handle_call({:put, job}, _from, state) do
-    {:reply, :ok, jobs ++ [job]}
+  def handle_call({:put, job}, _from, state0) do
+    job = %Job{job | status: :ready}
+
+    state1 = %{
+      jobs: Map.put(state0.jobs, job.key, job),
+      queue: state0.queue ++ [job.key],
+    }
+    {:reply, :ok, state1}
   end
 
-  def handle_call(:pop, _from, state) do
-    case jobs do
+  def handle_call(:next, _from, state) do
+    case state.queue do
       [] ->
-        {:reply, nil, jobs}
-      [job|rest] ->
-        {:reply, job, rest}
+        {:reply, nil, state}
+      [key|rest] ->
+        {:reply, Map.get(state.jobs, key), Map.put(state, :queue, rest)}
     end
+  end
+
+  def handle_call({:get, key}, _from, state) do
+    {:reply, Map.get(state.jobs, key), state}
   end
 end

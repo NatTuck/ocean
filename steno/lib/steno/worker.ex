@@ -19,7 +19,7 @@ defmodule Steno.Worker do
 
   @impl true
   def handle_info(:poll, state) do
-    if job = Queue.get() do
+    if job = Queue.next() do
       IO.inspect({:run_job, job})
     end
     schedule_poll()
