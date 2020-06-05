@@ -39,8 +39,12 @@ defmodule Steno.Queue do
     GenServer.call(@name, :next)
   end
 
-  def get(job_id) do
-    GenServer.call(@name, {:get, job_id})
+  def get(key) do
+    GenServer.call(@name, {:get, key})
+  end
+
+  def done(key) do
+    GenServer.call(@name, {:done, key})
   end
 
   @impl true
@@ -55,15 +59,25 @@ defmodule Steno.Queue do
 
   @impl true
   def handle_call(:list, _from, state) do
-    {:reply, state.jobs, state}
+    idxs = state.queue
+    |> Enum.with_index()
+    |> Enum.into(%{})
+
+    jobs = state.jobs
+    |> Map.values()
+    |> Enum.map(&(%Job{&1 | idx: Map.get(idxs, &1.key)}))
+    |> Enum.sort_by(&({status_order(&1.status), &1.idx, &1.pri}))
+
+    {:reply, jobs, state}
   end
 
   def handle_call({:put, job}, _from, state0) do
     job = %Job{job | status: :ready}
+    jobs = Map.put(state0.jobs, job.key, job)
 
     state1 = %{
-      jobs: Map.put(state0.jobs, job.key, job),
-      queue: state0.queue ++ [job.key],
+      jobs: jobs,
+      queue: insert_key(state0.queue, job.key, jobs),
     }
     {:reply, :ok, state1}
   end
@@ -73,11 +87,39 @@ defmodule Steno.Queue do
       [] ->
         {:reply, nil, state}
       [key|rest] ->
-        {:reply, Map.get(state.jobs, key), Map.put(state, :queue, rest)}
+        job = Map.get(state.jobs, key)
+        |> Map.put(:status, :running)
+
+        jobs = Map.put(state.jobs, job.key, job)
+
+        {:reply, job, %{state | jobs: jobs, queue: rest}}
     end
   end
 
   def handle_call({:get, key}, _from, state) do
     {:reply, Map.get(state.jobs, key), state}
   end
+
+  def handle_call({:done, key}, _from, state0) do
+    job = Map.get(state0.jobs, key)
+    job = %Job{job | status: :done}
+    state1 = put_in(state0, [:jobs, key], job)
+    {:reply, job, state1}
+  end
+
+  def insert_key([], x, _), do: [x]
+  def insert_key([y|ys], x, jobs) do
+    aa = Map.get(jobs, x)
+    bb = Map.get(jobs, y)
+
+    if aa.pri < bb.pri do
+      [x | [y|ys]]
+    else
+      [y | insert_key(ys, x, jobs)]
+    end
+  end
+
+  def status_order(:running), do: 0
+  def status_order(:ready), do: 1
+  def status_order(:done), do: 2
 end

@@ -1,9 +1,14 @@
 defmodule Steno.Job do
-  # Key must be unique.
-  # For inkfish, it could be "#{sub_id}-#{run#}"
+  # Key:
+  #  - Is unique, new replaces old.
+  #  - For Inkfish: "#{7 digit sub_id}"
+
+  # Pri:
+  #  - Jobs will be sorted in ascending order by pri.
+  #  - Could be useful to make this attempt #.
 
   # Status is one of:
   #   :ready, :running, :done
 
-  defstruct key: nil, pri: 1, dat: %{}, status: :ready
+  defstruct key: nil, pri: 10, idx: nil, data: %{}, status: :ready
 end

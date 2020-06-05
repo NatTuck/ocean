@@ -2,6 +2,7 @@ defmodule StenoWeb.PageController do
   use StenoWeb, :controller
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    jobs = Steno.Queue.list()
+    render(conn, "index.html", jobs: jobs)
   end
 end

@@ -2,6 +2,7 @@ defmodule Steno.Worker do
   use GenServer
 
   alias Steno.Queue
+  alias Steno.Job
 
   def start_link(arg) do
     GenServer.start_link(__MODULE__, arg)
@@ -20,9 +21,15 @@ defmodule Steno.Worker do
   @impl true
   def handle_info(:poll, state) do
     if job = Queue.next() do
-      IO.inspect({:run_job, job})
+      run_job(job)
     end
     schedule_poll()
     {:noreply, state}
+  end
+
+  def run_job(job) do
+    :timer.sleep(2000)
+    IO.inspect({:run_job, job})
+    Queue.done(job.key)
   end
 end
