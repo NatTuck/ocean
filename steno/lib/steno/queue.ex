@@ -79,7 +79,7 @@ defmodule Steno.Queue do
       jobs: jobs,
       queue: insert_key(state0.queue, job.key, jobs),
     }
-    {:reply, job, state1}
+    {:reply, {:ok, job}, state1}
   end
 
   def handle_call(:next, _from, state) do

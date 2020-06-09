@@ -14,6 +14,7 @@ job = %{
   key: "55",
   pri: 10,
   container: %{
+    dockerfile: "http://localhost:8001/Dockerfile",
     size_limit: "10M",
   },
   driver: %{

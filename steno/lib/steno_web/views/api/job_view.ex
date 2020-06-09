@@ -11,14 +11,9 @@ defmodule StenoWeb.Api.JobView do
   end
 
   def render("job.json", %{job: job}) do
-    %{id: job.id,
+    %{
       key: job.key,
-      user: job.user,
-      desc: job.desc,
-      sbx_cfg: job.sbx_cfg,
-      sub_url: job.sub_url,
-      gra_url: job.gra_url,
-      meta: job.meta,
-      output: job.output}
+      pri: job.pri,
+    }
   end
 end
