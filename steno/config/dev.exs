@@ -1,5 +1,10 @@
 use Mix.Config
 
+# Shared secrets used for authentication of clients.
+config :steno, shared_secrets: [
+  demo: "secret",
+]
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

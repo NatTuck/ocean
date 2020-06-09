@@ -1,7 +1,13 @@
 defmodule StenoWeb.Api.JobController do
   use StenoWeb, :controller
 
+  alias Steno.Job
   alias Steno.Jobs
+
+  alias Steno.Queue
+
+  alias StenoWeb.Plugs
+  plug Plugs.RequireSecret
 
   action_fallback StenoWeb.FallbackController
 
@@ -11,7 +17,7 @@ defmodule StenoWeb.Api.JobController do
   end
 
   def create(conn, %{"job" => job_params}) do
-    with {:ok, job} <- Jobs.create_job(job_params) do
+    with {:ok, job} <- Queue.add(struct!(Job, job_params)) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.job_path(conn, :show, job))

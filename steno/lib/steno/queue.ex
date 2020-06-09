@@ -31,8 +31,8 @@ defmodule Steno.Queue do
     GenServer.call(@name, :list)
   end
 
-  def put(job) do
-    GenServer.call(@name, {:put, job})
+  def add(job) do
+    GenServer.call(@name, {:add, job})
   end
 
   def next() do
@@ -71,7 +71,7 @@ defmodule Steno.Queue do
     {:reply, jobs, state}
   end
 
-  def handle_call({:put, job}, _from, state0) do
+  def handle_call({:add, job}, _from, state0) do
     job = %Job{job | status: :ready}
     jobs = Map.put(state0.jobs, job.key, job)
 
@@ -79,7 +79,7 @@ defmodule Steno.Queue do
       jobs: jobs,
       queue: insert_key(state0.queue, job.key, jobs),
     }
-    {:reply, :ok, state1}
+    {:reply, job, state1}
   end
 
   def handle_call(:next, _from, state) do
