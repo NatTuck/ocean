@@ -14,13 +14,17 @@ job = %{
   key: "55",
   pri: 10,
   container: %{
-    dockerfile: "http://localhost:8001/Dockerfile",
+    base: "debian:buster",
+    packages: ["clang", "clang-tools", "valgrind"],
+    user_commands: [
+      "curl https://sh.rustup.rs -sSf | sh -s -- -y",
+    ],
     size_limit: "10M",
   },
   driver: %{
     script: "classic",
-    sub_url: "http://localhost:8001/sub.tar.gz",
-    gra_url: "http://localhost:8001/gra.tar.gz",
+    SUB: "http://localhost:8001/sub.tar.gz",
+    GRA: "http://localhost:8001/gra.tar.gz",
   }
 }
 

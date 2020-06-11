@@ -24,7 +24,7 @@ defmodule StenoWeb.Router do
   scope "/api", StenoWeb.Api, as: :api do
     pipe_through :api
 
-    resources "/jobs", JobController, except: [:new, :edit]
+    resources "/jobs", JobController, except: [:new, :edit, :update]
   end
 
   # Enables LiveDashboard only for development

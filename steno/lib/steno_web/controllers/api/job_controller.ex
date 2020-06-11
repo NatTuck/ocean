@@ -2,7 +2,6 @@ defmodule StenoWeb.Api.JobController do
   use StenoWeb, :controller
 
   alias Steno.Job
-  alias Steno.Jobs
 
   alias Steno.Queue
 
@@ -12,7 +11,7 @@ defmodule StenoWeb.Api.JobController do
   action_fallback StenoWeb.FallbackController
 
   def index(conn, _params) do
-    jobs = Jobs.list_jobs()
+    jobs = Queue.list()
     render(conn, "index.json", jobs: jobs)
   end
 
@@ -26,23 +25,13 @@ defmodule StenoWeb.Api.JobController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    job = Jobs.get_job!(id)
+  def show(conn, %{"key" => key}) do
+    job = Queue.get(key)
     render(conn, "show.json", job: job)
   end
 
-  def update(conn, %{"id" => id, "job" => job_params}) do
-    job = Jobs.get_job!(id)
-
-    with {:ok, job} <- Jobs.update_job(job, job_params) do
-      render(conn, "show.json", job: job)
-    end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    job = Jobs.get_job!(id)
-
-    with {:ok, _} <- Jobs.delete_job(job) do
+  def delete(conn, %{"key" => key}) do
+    with {:ok, _} <- Queue.cancel(key) do
       send_resp(conn, :no_content, "")
     end
   end

@@ -17,6 +17,8 @@ defmodule Steno.Application do
       StenoWeb.Endpoint,
       # Worker pulls jobs from queue and runs them
       Steno.Worker,
+      Steno.Itty.Sup,
+      Steno.Container.Sup,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

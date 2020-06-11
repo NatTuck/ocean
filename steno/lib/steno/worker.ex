@@ -1,6 +1,7 @@
 defmodule Steno.Worker do
   use GenServer
 
+  alias Steno.Container
   alias Steno.Queue
   alias Steno.Job
 
@@ -28,8 +29,7 @@ defmodule Steno.Worker do
   end
 
   def run_job(job) do
-    :timer.sleep(2000)
-    IO.inspect({:run_job, job})
-    Queue.done(job.key)
+    {:ok, pid, _} = Container.start(job.key)
+    Container.wait(pid)
   end
 end

@@ -43,8 +43,12 @@ defmodule Steno.Queue do
     GenServer.call(@name, {:get, key})
   end
 
-  def done(key) do
-    GenServer.call(@name, {:done, key})
+  def done(key, status, output) do
+    GenServer.call(@name, {:done, key, status, output})
+  end
+
+  def cancel(key) do
+    GenServer.call(@name, {:cancel, key})
   end
 
   @impl true
@@ -100,10 +104,21 @@ defmodule Steno.Queue do
     {:reply, Map.get(state.jobs, key), state}
   end
 
-  def handle_call({:done, key}, _from, state0) do
+  def handle_call({:done, key, status, output}, _from, state0) do
     job = Map.get(state0.jobs, key)
-    job = %Job{job | status: :done}
+    outp = %{output: output, status: status}
+    job = %Job{job | status: :done, output: outp}
     state1 = put_in(state0, [:jobs, key], job)
+    {:reply, job, state1}
+  end
+
+  def handle_call({:cancel, key}, _from, state0) do
+    job = Map.get(state0.jobs, key)
+    job = %Job{job | status: :cancelled}
+    qq = Enum.filter(state0.queue, &(&1.key != key))
+    state1 = state0
+    |> put_in([:jobs, key], job)
+    |> Map.put(:queue, qq)
     {:reply, job, state1}
   end
 

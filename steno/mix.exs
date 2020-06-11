@@ -45,6 +45,7 @@ defmodule Steno.MixProject do
       {:libcluster, "~> 3.2"},
       {:singleton, "~> 1.3"},
       {:joken, "~> 2.2"},
+      {:erlexec, "~> 1.10"},
     ]
   end
 

@@ -8,7 +8,7 @@ defmodule Steno.Job do
   #  - Could be useful to make this attempt #.
 
   # Status is one of:
-  #   :ready, :running, :done
+  #   :ready, :running, :done, :cancelled
   #
   # Data contains:
   #   - sandbox: {...}   # Sandbox config
@@ -36,5 +36,9 @@ defmodule Steno.Job do
 
   def new(params) do
     struct!(__MODULE__, atomize(params, keys()))
+  end
+
+  def env(job) do
+    job.driver
   end
 end
