@@ -17,7 +17,7 @@ defmodule Steno.Job do
 
   @derive {Phoenix.Param, key: :key}
   defstruct key: nil, pri: 10, idx: nil, container: %{}, driver: %{},
-    output: %{}, postback: nil, status: :ready
+    output: %{}, postback: nil, tag: nil, status: :ready
 
   def keys() do
     struct(__MODULE__, %{})
@@ -40,5 +40,9 @@ defmodule Steno.Job do
 
   def env(job) do
     job.driver
+  end
+
+  def postback_view(job) do
+    Map.drop(job, [:__struct__])
   end
 end

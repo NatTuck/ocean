@@ -1,7 +1,5 @@
 FROM <%= base %>
 
-COPY driver.pl /var/tmp/driver.pl
-
 ENV DEBIAN_FRONTEND noninteractive
 RUN adduser student --disabled-password --gecos "Student,,,,"
 
@@ -13,7 +11,8 @@ RUN apt-get -y install apt-utils debian-goodies util-linux \
 RUN apt-get -y install <%= package %>
 <% end %>
 
-
 <%= for cmd <- user_commands do %>
 RUN su - student -c "<%= cmd %>"
 <% end %>
+
+COPY driver.pl /var/tmp/driver.pl

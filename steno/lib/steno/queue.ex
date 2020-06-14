@@ -2,6 +2,7 @@ defmodule Steno.Queue do
   use GenServer
 
   alias Steno.Job
+  alias Steno.Postback
 
   # There is a single global job queue process.
   #
@@ -108,6 +109,9 @@ defmodule Steno.Queue do
     job = Map.get(state0.jobs, key)
     outp = %{output: output, status: status}
     job = %Job{job | status: :done, output: outp}
+
+    Postback.postback(job)
+
     state1 = put_in(state0, [:jobs, key], job)
     {:reply, job, state1}
   end

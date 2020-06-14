@@ -46,6 +46,7 @@ defmodule Steno.MixProject do
       {:singleton, "~> 1.3"},
       {:joken, "~> 2.2"},
       {:erlexec, "~> 1.10"},
+      {:httpoison, "~> 1.6"},
     ]
   end
 

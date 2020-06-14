@@ -16,6 +16,9 @@ defmodule StenoWeb.Api.JobController do
   end
 
   def create(conn, %{"job" => job_params}) do
+    job_params = job_params
+    |> Map.put("tag", conn.assigns[:auth_tag])
+
     job0 = Job.new(job_params)
     with {:ok, job} <- Queue.add(job0) do
       conn

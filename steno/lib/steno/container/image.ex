@@ -24,9 +24,7 @@ defmodule Steno.Container.Image do
     end
 
     drvp = Path.join(base, "driver.pl")
-    unless File.exists?(drvp) do
-      File.copy(driver, drvp)
-    end
+    File.copy(driver, drvp)
 
     {:ok, base, hash}
   end

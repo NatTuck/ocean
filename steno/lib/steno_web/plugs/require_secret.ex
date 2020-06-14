@@ -6,11 +6,12 @@ defmodule StenoWeb.Plugs.RequireSecret do
   def call(conn, _opts) do
     with {:ok, auth} <- get_auth(conn),
          {:ok, token} <- get_token(auth),
-         {:ok, jwt} <- verify(token)
+         {:ok, tag, jwt} <- verify(token)
     do
       # IO.inspect({:jwt, jwt})
       conn
-      |> assign(:auth, jwt)
+      |> assign(:auth_token, jwt)
+      |> assign(:auth_tag, tag)
       |> put_resp_header("x-valid-auth", inspect(jwt))
     else
       _ -> auth_failed(conn)
@@ -43,11 +44,14 @@ defmodule StenoWeb.Plugs.RequireSecret do
     |> Enum.find(&valid/1)
   end
 
-  def verify_one({_tag, secret}, token) do
+  def verify_one({tag, secret}, token) do
     signer = Joken.Signer.create("HS256", secret)
-    Joken.Signer.verify(token, signer)
+    case Joken.Signer.verify(token, signer) do
+      {:ok, token} -> {:ok, tag, token}
+      _else -> :fail
+    end
   end
 
-  def valid({:ok, _}), do: true
+  def valid({:ok, _, _}), do: true
   def valid(_), do: false
 end

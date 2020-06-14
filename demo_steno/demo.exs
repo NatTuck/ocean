@@ -23,9 +23,10 @@ job = %{
   },
   driver: %{
     script: "classic",
-    SUB: "http://localhost:8001/sub.tar.gz",
-    GRA: "http://localhost:8001/gra.tar.gz",
-  }
+    SUB: "http://icewing:8001/sub.tar.gz",
+    GRA: "http://icewing:8001/gra.tar.gz",
+  },
+  postback: "http://icewing:8001/result",
 }
 
 body = Jason.encode!(%{job: job})
