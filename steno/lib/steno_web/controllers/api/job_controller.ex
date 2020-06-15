@@ -6,7 +6,7 @@ defmodule StenoWeb.Api.JobController do
   alias Steno.Queue
 
   alias StenoWeb.Plugs
-  plug Plugs.RequireSecret
+  plug Plugs.RequireAuth
 
   action_fallback StenoWeb.FallbackController
 

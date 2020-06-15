@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    jwt (2.2.1)
+    webrick (1.6.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  jwt
+  webrick
+
+BUNDLED WITH
+   2.1.4

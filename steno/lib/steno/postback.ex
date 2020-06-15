@@ -3,7 +3,12 @@ defmodule Steno.Postback do
   alias Steno.Job
 
   def postback(%Job{} = job) do
-    {:ok, token, _} = Token.gen(job.tag)
+    claims = %{
+      iss: "steno",
+      aud: job.tag,
+    }
+
+    {:ok, token, _} = Token.gen(job.tag, claims)
     hdrs = [
       {"Accept", "application/json; charset=utf-8"},
       {"Content-Type", "application/json"},

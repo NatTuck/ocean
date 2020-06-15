@@ -71,13 +71,13 @@ defmodule Steno.Queue do
     jobs = state.jobs
     |> Map.values()
     |> Enum.map(&(%Job{&1 | idx: Map.get(idxs, &1.key)}))
-    |> Enum.sort_by(&({status_order(&1.status), &1.idx, &1.pri}))
+    |> Enum.sort_by(&({state_order(&1.state), &1.idx, &1.pri}))
 
     {:reply, jobs, state}
   end
 
   def handle_call({:add, job}, _from, state0) do
-    job = %Job{job | status: :ready}
+    job = %Job{job | state: :ready}
     jobs = Map.put(state0.jobs, job.key, job)
 
     state1 = %{
@@ -93,7 +93,7 @@ defmodule Steno.Queue do
         {:reply, nil, state}
       [key|rest] ->
         job = Map.get(state.jobs, key)
-        |> Map.put(:status, :running)
+        |> Map.put(:state, :running)
 
         jobs = Map.put(state.jobs, job.key, job)
 
@@ -107,8 +107,7 @@ defmodule Steno.Queue do
 
   def handle_call({:done, key, status, output}, _from, state0) do
     job = Map.get(state0.jobs, key)
-    outp = %{output: output, status: status}
-    job = %Job{job | status: :done, output: outp}
+    job = %Job{job | state: :done, output: output, status: status}
 
     Postback.postback(job)
 
@@ -118,7 +117,7 @@ defmodule Steno.Queue do
 
   def handle_call({:cancel, key}, _from, state0) do
     job = Map.get(state0.jobs, key)
-    job = %Job{job | status: :cancelled}
+    job = %Job{job | state: :cancelled}
     qq = Enum.filter(state0.queue, &(&1.key != key))
     state1 = state0
     |> put_in([:jobs, key], job)
@@ -138,7 +137,7 @@ defmodule Steno.Queue do
     end
   end
 
-  def status_order(:running), do: 0
-  def status_order(:ready), do: 1
-  def status_order(:done), do: 2
+  def state_order(:running), do: 0
+  def state_order(:ready), do: 1
+  def state_order(:done), do: 2
 end

@@ -6,10 +6,10 @@ defmodule Steno.Token do
     default_claims(skip: [:iat, :nbf, :iss, :aud])
   end
 
-  def gen(tag) do
+  def gen(tag, claims) do
     secret = get_secret(tag)
     signer = Joken.Signer.create("HS256", secret)
-    generate_and_sign(%{}, signer)
+    generate_and_sign(claims, signer)
   end
 
   def get_secret(tag) do

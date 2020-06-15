@@ -17,7 +17,7 @@ defmodule Steno.Job do
 
   @derive {Phoenix.Param, key: :key}
   defstruct key: nil, pri: 10, idx: nil, container: %{}, driver: %{},
-    output: %{}, postback: nil, tag: nil, status: :ready
+    output: [], status: nil, postback: nil, tag: nil, state: :ready
 
   def keys() do
     struct(__MODULE__, %{})

@@ -1,4 +1,4 @@
-defmodule StenoWeb.Plugs.RequireSecret do
+defmodule StenoWeb.Plugs.RequireAuth do
   import Plug.Conn
 
   def init(opts), do: opts
@@ -52,6 +52,8 @@ defmodule StenoWeb.Plugs.RequireSecret do
     end
   end
 
-  def valid({:ok, _, _}), do: true
+  def valid({:ok, _, token}) do
+    token["aud"] == "steno"
+  end
   def valid(_), do: false
 end
