@@ -1,5 +1,11 @@
+defmodule Token do
+  use Joken.Config
 
-alias DemoSteno.Token
+  @impl true
+  def token_config do
+    default_claims(skip: [:iat, :nbf, :iss, :aud])
+  end
+end
 
 {:ok, token, _} = Token.generate_and_sign(%{})
 

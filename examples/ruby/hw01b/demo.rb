@@ -9,6 +9,8 @@ require 'socket'
 
 client = 'demo'
 secret = 'secret'
+port = 18500 + ($$ % 1000)
+host = Socket.gethostname
 
 def seq_log(job)
   xs = job["output"]
@@ -22,8 +24,11 @@ def seq_log(job)
 end
 
 root = File.expand_path '.'
-server = WEBrick::HTTPServer.new(Port: 8001, DocumentRoot: root)
-trap 'INT' do server.shutdown end
+server = WEBrick::HTTPServer.new(Port: port, DocumentRoot: root)
+trap 'INT' do
+  server.shutdown
+  puts "no longer listening on #{host}:#{port}"
+end
 
 server.mount_proc '/result' do |req, res|
   thead = req['Authorization']
@@ -45,6 +50,8 @@ server.mount_proc '/result' do |req, res|
 
   res.body = "Hi"
   server.shutdown
+
+  puts "no longer listening on #{host}:#{port}"
 end
 
 sthr = Thread.new do
@@ -65,7 +72,6 @@ req['Accept'] = "application/json; charset=utf-8"
 req['Content-Type'] = "application/json"
 req['Authorization'] = "Bearer #{token}"
 
-host = Socket.gethostname
 
 job = {
   key: "55",
@@ -80,10 +86,10 @@ job = {
   },
   driver: {
     script: "classic",
-    SUB: "http://#{host}:8001/sub.tar.gz",
-    GRA: "http://#{host}:8001/gra.tar.gz",
+    SUB: "http://#{host}:#{port}/sub.tar.gz",
+    GRA: "http://#{host}:#{port}/gra.tar.gz",
   },
-  postback: "http://#{host}:8001/result",
+  postback: "http://#{host}:#{port}/result",
 }
 
 req.body = JSON.generate({job: job})

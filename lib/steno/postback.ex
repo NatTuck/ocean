@@ -18,6 +18,8 @@ defmodule Steno.Postback do
     view = Job.postback_view(job)
     body = Jason.encode!(%{job: view})
 
+    IO.inspect {:postback_url, job.postback}
+
     HTTPoison.post!(job.postback, body, hdrs)
   end
 end
